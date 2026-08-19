@@ -1,16 +1,24 @@
 # Kagaz Studio
 
-Screenshot, document photo, ya PDF ko **editable Microsoft Word** (`.docx`) mein badlein — layout ke saath. Pages ko **PNG image** mein bhi nikaal sakte ho.
+Screenshot, document photo, ya PDF ko **editable Microsoft Word** (`.docx`) mein badlein. Pages ko **PNG** mein bhi nikaal sakte ho.
 
-## Kya milta hai
+Tool **browser mein hi chalta hai** — apna computer / localhost nahi chahiye.
 
-- Photo / screenshot → editable Word
-- PDF → editable Word (digital text keep hota hai; scanned pages par OCR)
-- Visual Word copy — page bilkul original jaisi dikhti hai
-- Har page PNG + ZIP download
-- Hindi + English UI
+## Live site
 
-## Chalane ka tarika
+GitHub Pages (jab enable ho):
+
+https://kr234956.github.io/Lottery-777/
+
+## Phone / browser se use
+
+1. Site kholo
+2. Photo, screenshot ya PDF choose karo
+3. **Editable Word**, **Visual Word**, ya **PNG ZIP** download karo
+
+File aapke device pe hi convert hoti hai.
+
+## Local (optional)
 
 ```bash
 python3 -m venv .venv
@@ -19,11 +27,4 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Browser mein `http://localhost:5000` kholo. File drop karo, Word / images download karo.
-
-## Limits
-
-- Max file size: 28 MB
-- Max 40 pages
-- Digital PDF ka text (Hindi/English/tables) sabse clean rehta hai
-- Photo OCR Latin script par strong hai; Devanagari scans ke liye visual Word + PNG better option hai
+`http://localhost:5000` — same website serve hogi.

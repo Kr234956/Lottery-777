@@ -10,6 +10,7 @@ import uuid
 from pathlib import Path
 
 from flask import Flask, abort, jsonify, render_template, request, send_file, send_from_directory
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from converter import IMAGE_EXTS, PDF_EXTS, ConversionError, convert_file, warmup
 
@@ -24,6 +25,7 @@ JOBS.mkdir(exist_ok=True)
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 app.config["MAX_CONTENT_LENGTH"] = MAX_BYTES
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 _lock = threading.Lock()
 _state: dict[str, dict] = {}
@@ -89,7 +91,17 @@ def run_job(job_id: str, src: Path) -> None:
 
 @app.get("/")
 def home():
-    return render_template("index.html")
+    return send_from_directory(ROOT / "docs", "index.html")
+
+
+@app.get("/css/<path:filename>")
+def docs_css(filename: str):
+    return send_from_directory(ROOT / "docs" / "css", filename)
+
+
+@app.get("/js/<path:filename>")
+def docs_js(filename: str):
+    return send_from_directory(ROOT / "docs" / "js", filename)
 
 
 @app.get("/health")
