@@ -1,0 +1,7 @@
+{
+  "name": "lottery-777",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes serve -s . -l 3000"
+  }
+}
