@@ -328,14 +328,93 @@
 
   function nav(active) {
     return `
-      <nav class="nav">
+      <nav class="nav m-only">
         <button data-go="promo" class="${active === "promo" ? "on" : ""}">${ico.promo}<span>Promotion</span></button>
         <button data-go="activity" class="${active === "activity" ? "on" : ""}">${ico.gift}<span>Activity</span></button>
         <button data-go="home" class="home-fab">${ico.home}<span>Home</span></button>
         <button data-go="wallet" class="${active === "wallet" ? "on" : ""}">${ico.wallet}<span>Wallet</span></button>
         <button data-go="account" class="${active === "account" ? "on" : ""}">${ico.user}<span>Account</span></button>
       </nav>
-      <button class="chat-fab" data-go="support">${ico.chat}</button>
+      <button class="chat-fab m-only" data-go="support">${ico.chat}</button>
+    `;
+  }
+
+  function siteHeader(active) {
+    const links = state.user
+      ? [
+          ["home", "Home"],
+          ["wallet", "Wallet"],
+          ["promo", "Promotion"],
+          ["activity", "Activity"],
+          ["support", "Support"],
+        ]
+      : [
+          ["landing", "Home"],
+          ["landing", "Games"],
+          ["about", "About"],
+          ["support", "Help"],
+        ];
+    return `
+      <header class="site-head">
+        <div class="bar">
+          <button class="brand-row" data-go="${state.user ? "home" : "landing"}" style="border:0;background:transparent;cursor:pointer">
+            <img src="public/img/logo.png" alt="" />
+            <div class="brand-name">91 CLUB</div>
+          </button>
+          <nav class="site-links">
+            ${links.map(([id, label]) => `<button data-go="${id}" class="${active === id ? "on" : ""}">${label}</button>`).join("")}
+            ${state.user ? `
+              <button data-cat="lobby">Lottery</button>
+              <button data-cat="mini">Mini</button>
+              <button data-cat="slots">Slots</button>
+            ` : ""}
+          </nav>
+          <div class="site-actions">
+            ${state.user ? `
+              <span class="head-bal">${money(state.user.balance)}</span>
+              <button class="btn-ghost" data-go="withdraw">Withdraw</button>
+              <button class="btn-sm" data-go="deposit">Deposit</button>
+              <button class="avatar-sm" data-go="account">${(state.user.nick || "M").slice(0, 1)}</button>
+            ` : `
+              <button class="btn-ghost" data-go="auth">Log in</button>
+              <button class="btn-sm" id="heroReg" data-go="auth">Register</button>
+            `}
+          </div>
+        </div>
+      </header>
+    `;
+  }
+
+  function siteFooter() {
+    return `
+      <footer class="site-foot">
+        <div class="bar">
+          <div>
+            <h5>91 Club</h5>
+            <p>Entertainment lottery lobby inspired by 91 Club. WinGo, K3, 5D, Aviator and slots — virtual play only. 18+.</p>
+          </div>
+          <div>
+            <h5>Games</h5>
+            <button data-go="wingo">WinGo</button>
+            <button data-go="k3">K3 Lottery</button>
+            <button data-go="aviator">Aviator</button>
+            <button data-go="mines">Mines</button>
+          </div>
+          <div>
+            <h5>Account</h5>
+            <button data-go="wallet">Wallet</button>
+            <button data-go="promo">Promotion</button>
+            <button data-go="activity">Activity</button>
+            <button data-go="support">Customer service</button>
+          </div>
+          <div>
+            <h5>Legal</h5>
+            <button data-go="about">About this demo</button>
+            <p>No real deposits. Not affiliated with the official 91 Club brand.</p>
+          </div>
+        </div>
+        <div class="foot-copy">© ${new Date().getFullYear()} Lottery-777 · Demo website · Virtual coins only</div>
+      </footer>
     `;
   }
 
@@ -356,41 +435,101 @@
 
   function viewAuth() {
     const t = state.tab;
+    const form = `
+      <div class="tabs-pill">
+        <button class="${t === "login" ? "on" : ""}" data-tab="login">Log in</button>
+        <button class="${t === "reg" ? "on" : ""}" data-tab="reg">Register</button>
+      </div>
+      <div class="field"><label>Phone number</label><input id="ph" type="tel" maxlength="10" placeholder="Enter 10-digit mobile" /></div>
+      <div class="field"><label>Password</label><input id="pw" type="password" placeholder="Password" /></div>
+      ${t === "reg" ? `
+        <div class="field"><label>Confirm password</label><input id="pw2" type="password" placeholder="Re-enter password" /></div>
+        <div class="field"><label>Invite code</label><input id="inv" placeholder="122417877882" /></div>
+      ` : ""}
+      <button class="btn btn-orange" id="authGo">${t === "login" ? "Log in" : "Register"}</button>
+      <div class="demo-row">
+        <button class="btn btn-outline" id="demo">Play Demo ₹500</button>
+      </div>
+      <p class="hint">Entertainment demo · virtual balance only · 18+</p>
+    `;
     return `
-      <div class="auth">
-        <div class="auth-hero">
-          <div class="brand">
-            <img src="public/img/logo.png" alt="" />
-            <h1>91 CLUB</h1>
+      <div class="screen">
+        ${siteHeader("auth")}
+        <div class="auth-web">
+          <div class="auth-side">
+            <h2>Play on the web</h2>
+            <p>WinGo, lottery, Aviator and slots in your browser. New members get a ₹20 welcome bonus.</p>
           </div>
-          <p>Login or register with your mobile number. New members get ₹20 welcome bonus.</p>
+          <div class="auth-panel">
+            <div class="m-only auth-hero" style="border-radius:16px;margin-bottom:16px;padding:20px">
+              <div class="brand"><img src="public/img/logo.png" alt="" /><h1>91 CLUB</h1></div>
+              <p>Login or register with your mobile number.</p>
+            </div>
+            ${form}
+          </div>
         </div>
-        <div class="auth-body">
-          <div class="tabs-pill">
-            <button class="${t === "login" ? "on" : ""}" data-tab="login">Log in</button>
-            <button class="${t === "reg" ? "on" : ""}" data-tab="reg">Register</button>
+        ${siteFooter()}
+      </div>
+    `;
+  }
+
+  function viewLanding() {
+    const all = [...GAMES.lobby, ...GAMES.mini, ...GAMES.slots];
+    return `
+      <div class="landing">
+        ${siteHeader("landing")}
+        <section class="hero">
+          <div class="bar">
+            <div>
+              <p style="letter-spacing:2px;font-size:12px;font-weight:700;opacity:.8;margin:0 0 10px">91 CLUB WEB</p>
+              <h1>Lottery, WinGo &amp; mini games in your browser</h1>
+              <p>Same club lobby — now a full website. Register free, get virtual bonus coins, and play WinGo, K3, Aviator, Mines and slots.</p>
+              <div class="hero-cta">
+                <button class="btn btn-orange" data-go="auth">Register now</button>
+                <button class="btn btn-outline" id="demo">Play Demo ₹500</button>
+              </div>
+            </div>
+            <div class="hero-art"><img src="public/img/banner-slots.jpg" alt="91 Club games" /></div>
           </div>
-          <div class="field"><label>Phone number</label><input id="ph" type="tel" maxlength="10" placeholder="Enter 10-digit mobile" /></div>
-          <div class="field"><label>Password</label><input id="pw" type="password" placeholder="Password" /></div>
-          ${t === "reg" ? `
-            <div class="field"><label>Confirm password</label><input id="pw2" type="password" placeholder="Re-enter password" /></div>
-            <div class="field"><label>Invite code</label><input id="inv" placeholder="122417877882" /></div>
-          ` : ""}
-          <button class="btn btn-orange" id="authGo">${t === "login" ? "Log in" : "Register"}</button>
-          <div class="demo-row">
-            <button class="btn btn-outline" id="demo">Play Demo ₹500</button>
-          </div>
-          <p class="hint">Entertainment demo · virtual balance only · 18+</p>
+        </section>
+        <div class="stats">
+          <div class="stat"><b>20+</b><span>Games in one lobby</span></div>
+          <div class="stat"><b>₹20</b><span>Welcome bonus</span></div>
+          <div class="stat"><b>30s</b><span>Fastest WinGo round</span></div>
+          <div class="stat"><b>18+</b><span>Entertainment only</span></div>
         </div>
+        <section class="web-sec">
+          <h2>Popular games</h2>
+          <p class="lead">Tap a card to log in and start a virtual round</p>
+          <div class="web-grid">${all.map(gameCard).join("")}</div>
+        </section>
+        <section class="web-sec">
+          <h2>How it works</h2>
+          <div class="steps">
+            <div class="step"><i>1</i><h4>Create account</h4><p>Use your mobile number or jump in with the demo wallet.</p></div>
+            <div class="step"><i>2</i><h4>Get coins</h4><p>Welcome bonus, gift code 91WELCOME, or demo deposit.</p></div>
+            <div class="step"><i>3</i><h4>Pick a game</h4><p>WinGo colours, Aviator crash, Mines, slots and more.</p></div>
+            <div class="step"><i>4</i><h4>Track wallet</h4><p>Every bet and win is saved in this browser.</p></div>
+          </div>
+        </section>
+        <section class="web-sec">
+          <h2>FAQ</h2>
+          <div class="faq">
+            <details open><summary>Is this the real 91 Club?</summary><p>No. This is an entertainment clone for the Lottery-777 project. Virtual balance only.</p></details>
+            <details><summary>Can I withdraw real money?</summary><p>No. Deposit and withdraw buttons only move play-money in local storage.</p></details>
+            <details><summary>Does it work on phone and PC?</summary><p>Yes. Phone keeps the app layout. Desktop is a full website with header, lobby and footer.</p></details>
+          </div>
+        </section>
+        ${siteFooter()}
       </div>
     `;
   }
 
   function gameCard(g) {
-    if (g.img) {
-      return `<button class="gcard" data-go="${g.id}"><img src="${g.img}" alt="${g.name}" /></button>`;
-    }
-    return `<button class="gcard" data-go="${g.id}"><div class="gph" style="background:${g.bg}">${g.ph}</div></button>`;
+    const media = g.img
+      ? `<img src="${g.img}" alt="${g.name}" />`
+      : `<div class="gph" style="background:${g.bg}">${g.ph}</div>`;
+    return `<button class="gcard" data-go="${g.id}">${media}<span class="gname">${g.name}</span></button>`;
   }
 
   function viewHome() {
@@ -404,9 +543,17 @@
       card: "Teen Patti, Andar Bahar, Dragon Tiger",
       fish: "Arcade fishing with big multipliers",
     };
+    const webSections = ["lobby", "mini", "slots", "card", "fish"].map((c) => `
+      <div class="sec">
+        <h3>${titles[c]}</h3>
+        <p class="sub">${subs[c]}</p>
+        <div class="ggrid">${GAMES[c].map(gameCard).join("")}</div>
+      </div>
+    `).join("");
     return `
       <div class="screen">
-        <div class="topbar">
+        ${siteHeader("home")}
+        <div class="topbar m-only">
           <div class="brand-row">
             <img src="public/img/logo.png" alt="" />
             <div class="brand-name">91 CLUB</div>
@@ -417,7 +564,7 @@
           <div class="banner-wrap">
             <div class="banner"><img src="${banners[state.banner % 2]}" alt="banner" /></div>
           </div>
-          <div class="dots"><i class="${state.banner % 2 === 0 ? "on" : ""}"></i><i class="${state.banner % 2 === 1 ? "on" : ""}"></i></div>
+          <div class="dots m-only"><i class="${state.banner % 2 === 0 ? "on" : ""}"></i><i class="${state.banner % 2 === 1 ? "on" : ""}"></i></div>
           <div class="marquee"><span>Member****8121 won ₹2,450 on WinGo · Member****3309 won ₹8,100 on Aviator · Fast withdrawal · 24×7 support</span></div>
           <div class="wallet-card">
             <div class="wallet-top">
@@ -435,7 +582,7 @@
             <div class="promo wheel" data-go="wheel"><div class="p-ico">🎡</div><div><b>Wheel of fortune</b><span>Daily free spin</span></div></div>
             <div class="promo vip" data-go="vip"><div class="p-ico">👑</div><div><b>VIP privileges</b><span>Level ${state.user.vip} rewards</span></div></div>
           </div>
-          <div class="cats">
+          <div class="cats m-only">
             ${["lobby", "mini", "slots", "card", "fish"].map((c) => `
               <button class="cat ${state.cat === c ? "on" : ""}" data-cat="${c}">
                 <span class="ci">${{ lobby: "🏠", mini: "🎮", slots: "7️⃣", card: "🃏", fish: "🐟" }[c]}</span>
@@ -443,14 +590,16 @@
               </button>
             `).join("")}
           </div>
-          <div class="sec">
+          <div class="sec m-only">
             <h3>${titles[state.cat]}</h3>
             <p class="sub">${subs[state.cat]}</p>
             <div class="ggrid">${list.map(gameCard).join("")}</div>
           </div>
+          <div class="web-only">${webSections}</div>
           <p class="notice">This is a look-alike entertainment clone of 91 Club. All balances are virtual play-money. No real deposits or withdrawals.</p>
         </div>
         ${nav("home")}
+        ${siteFooter()}
       </div>
     `;
   }
@@ -1156,12 +1305,23 @@
   }
 
   /* ---------- render ---------- */
-  function render() {
+  function render(opts = {}) {
+    const y = opts.keepScroll ? window.scrollY : null;
     maybeSettle();
     const p = state.page;
+    const titles = {
+      landing: "91 Club — Lottery & Games",
+      auth: "Log in · 91 Club",
+      home: "Lobby · 91 Club",
+      wingo: "WinGo · 91 Club",
+      wallet: "Wallet · 91 Club",
+    };
+    document.title = titles[p] || "91 Club — Lottery & Games";
     let html = "";
     if (p === "splash") html = viewSplash();
+    else if (p === "landing") html = viewLanding();
     else if (p === "auth") html = viewAuth();
+    else if (!state.user && (p === "about" || p === "support")) html = p === "about" ? viewAbout() : viewSupport();
     else if (!state.user) html = viewAuth();
     else if (p === "home") html = viewHome();
     else if (p === "wingo") html = viewWingo(false);
@@ -1193,15 +1353,33 @@
 
     if (state.showHow) html += viewHow();
     app.innerHTML = html;
+    const screen = app.querySelector(".screen, .landing");
+    const skipChrome = ["splash", "landing", "auth"].includes(state.page);
+    if (screen && !skipChrome && !screen.querySelector(".site-head")) {
+      screen.insertAdjacentHTML("afterbegin", siteHeader(state.page));
+    }
+    if (screen && !skipChrome && !screen.querySelector(".site-foot")) {
+      screen.insertAdjacentHTML("beforeend", siteFooter());
+    }
     bind();
+    if (y != null) window.scrollTo(0, y);
   }
 
+  const PUBLIC = ["landing", "auth", "splash", "about", "support"];
+
   function go(page) {
+    if (!state.user && !PUBLIC.includes(page)) {
+      state.next = page;
+      page = "auth";
+    }
+    if (state.user && page === "landing") page = "home";
     state.page = page;
     state.bet = null;
     state.showHow = false;
-    if (page !== "mines") { /* keep mines mid-round when staying */ }
-    render();
+    const hash = "#/" + page;
+    if (location.hash !== hash) location.hash = hash;
+    else render();
+    window.scrollTo(0, 0);
   }
 
   function bind() {
@@ -1212,7 +1390,11 @@
       el.onclick = () => { state.tab = el.dataset.tab; render(); };
     });
     app.querySelectorAll("[data-cat]").forEach((el) => {
-      el.onclick = () => { state.cat = el.dataset.cat; render(); };
+      el.onclick = () => {
+        state.cat = el.dataset.cat;
+        if (state.page !== "home") go("home");
+        else render();
+      };
     });
     app.querySelectorAll("[data-mode]").forEach((el) => {
       el.onclick = () => { state.wingoMode = el.dataset.mode; render(); };
@@ -1256,18 +1438,26 @@
       if (state.tab === "login") {
         const err = login(ph, pw);
         if (err) return toast(err);
-        go("home");
+        go(state.next || "home");
+        state.next = null;
       } else {
         const pw2 = $("#pw2").value;
         if (pw !== pw2) return toast("Passwords do not match");
         const err = register(ph, pw, $("#inv").value.trim());
         if (err) return toast(err);
         toast("Welcome bonus ₹20 credited");
-        go("home");
+        go(state.next || "home");
+        state.next = null;
       }
     };
     const demo = $("#demo");
-    if (demo) demo.onclick = () => { demoLogin(); go("home"); };
+    if (demo) demo.onclick = () => { demoLogin(); go(state.next || "home"); state.next = null; };
+    app.querySelectorAll("[data-go='auth']").forEach((el) => {
+      if (/register/i.test(el.textContent || "")) {
+        const prev = el.onclick;
+        el.onclick = (e) => { state.tab = "reg"; if (prev) prev(e); };
+      }
+    });
 
     const logout = $("#logout");
     if (logout) logout.onclick = () => {
@@ -1508,11 +1698,24 @@
         render();
         return;
       }
-      render();
+      render({ keepScroll: true });
       setTimeout(step, 120);
     };
     setTimeout(step, 120);
   }
+
+  window.addEventListener("hashchange", () => {
+    const page = (location.hash.replace(/^#\/?/, "") || (state.user ? "home" : "landing"));
+    if (!page || page === state.page) return;
+    if (!state.user && !PUBLIC.includes(page)) {
+      state.page = "auth";
+      render();
+      return;
+    }
+    state.page = page === "landing" && state.user ? "home" : page;
+    state.bet = null;
+    render();
+  });
 
   /* boot */
   const sess = localStorage.getItem(KEY_SESS);
@@ -1520,19 +1723,23 @@
     const u = loadUsers().find((x) => x.phone === sess);
     if (u) state.user = u;
   }
+  const startHash = location.hash.replace(/^#\/?/, "");
+  if (startHash && startHash !== "splash") {
+    state.page = (!state.user && !PUBLIC.includes(startHash)) ? "auth" : startHash;
+    if (state.user && state.page === "landing") state.page = "home";
+  }
 
   render();
   setTimeout(() => {
     if (state.page === "splash") {
-      state.page = state.user ? "home" : "auth";
-      render();
+      go(state.user ? "home" : "landing");
     }
-  }, 1400);
+  }, 1200);
 
   setInterval(() => {
     state.tick++;
     if (state.tick % 5 === 0) state.banner = (state.banner + 1) % 2;
-    if (["home", "wingo", "trx", "k3", "5d"].includes(state.page)) render();
+    if (["home", "wingo", "trx", "k3", "5d"].includes(state.page)) render({ keepScroll: true });
     else maybeSettle();
   }, 1000);
 })();

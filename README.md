@@ -1,6 +1,6 @@
 # 91 Club — Lottery 777
 
-A mobile-first entertainment clone of the **91 Club** lobby: WinGo colour prediction, K3, 5D, Aviator, Mines, slots, wallet, promotion and account.
+A full website (desktop + tablet + phone) inspired by **91 Club**: public landing page, login, lobby, WinGo, K3, 5D, Aviator, Mines, slots, wallet, promotion and account.
 
 All balances are **virtual play-money**. There are no real payments, no UPI collection, and no affiliation with the official 91 Club product.
 
