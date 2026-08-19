@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kagaz Studio — Photo, Screenshot & PDF to Word</title>
+  <meta name="description" content="Screenshot, document photo ya PDF ko same-to-same editable MS Word file mein badlein. Images bhi download karein." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,750&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="top">
+    <a class="brand" href="/">
+      <span class="seal" aria-hidden="true">का</span>
+      <span>
+        <strong>Kagaz Studio</strong>
+        <em>Photo · Screenshot · PDF → Word</em>
+      </span>
+    </a>
+    <nav>
+      <button type="button" class="lang" id="langBtn" aria-label="Language">हिं / EN</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="kicker" data-i18n="kicker">Same dikhe. Editable rahe.</p>
+      <h1 data-i18n="heroTitle">Document ki photo ya PDF ko MS Word mein utaar do.</h1>
+      <p class="lede" data-i18n="lede">
+        Screenshot, scanned page ya PDF upload karo. Kagaz usko editable Word file banata hai —
+        layout ke saath — aur pages ko image mein bhi nikal deta hai. Download turant.
+      </p>
+      <ul class="pills" aria-label="Supported files">
+        <li>PDF</li><li>PNG</li><li>JPG</li><li>WEBP</li><li>TIFF</li>
+      </ul>
+    </section>
+
+    <section class="stage" id="stage">
+      <form class="drop" id="drop" tabindex="0">
+        <input id="file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.bmp,.tif,.tiff,application/pdf,image/*" hidden />
+        <div class="drop-art" aria-hidden="true">
+          <span class="sheet s1"></span>
+          <span class="sheet s2"></span>
+          <span class="sheet s3"></span>
+        </div>
+        <h2 data-i18n="dropTitle">File yahan chhod do</h2>
+        <p data-i18n="dropHint">ya click karke photo / screenshot / PDF choose karo · max 28 MB</p>
+        <button type="button" class="btn primary" id="browseBtn" data-i18n="browse">File choose karo</button>
+      </form>
+
+      <aside class="card how">
+        <h3 data-i18n="howTitle">Teen kadam</h3>
+        <ol>
+          <li data-i18n="step1"><b>1.</b> Document ki photo, screenshot ya PDF daalo.</li>
+          <li data-i18n="step2"><b>2.</b> Text nikal kar Word jaisa layout banate hain.</li>
+          <li data-i18n="step3"><b>3.</b> Editable Word, visual copy, aur PNG pages download.</li>
+        </ol>
+        <p class="fine" data-i18n="fine">Digital PDF ka asli text rehta hai (Hindi/English). Scanned photo par OCR chalta hai.</p>
+      </aside>
+    </section>
+
+    <section class="work hidden" id="work">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span id="fileName">document.pdf</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <i id="barFill"></i>
+        </div>
+        <p class="status" id="statusMsg">Shuru…</p>
+      </div>
+    </section>
+
+    <section class="result hidden" id="result">
+      <div class="result-head">
+        <div>
+          <p class="kicker" data-i18n="ready">Taiyaar</p>
+          <h2 id="resultTitle">Aapki files</h2>
+        </div>
+        <button type="button" class="btn ghost" id="againBtn" data-i18n="again">Nayi file</button>
+      </div>
+
+      <div class="downloads">
+        <a class="dl main" id="dlWord" href="#">
+          <span class="dl-ico">W</span>
+          <span>
+            <strong data-i18n="dlWord">Editable Word</strong>
+            <em data-i18n="dlWordSub">Text select / edit ho sakta hai</em>
+          </span>
+        </a>
+        <a class="dl" id="dlVisual" href="#">
+          <span class="dl-ico">≡</span>
+          <span>
+            <strong data-i18n="dlVisual">Visual Word</strong>
+            <em data-i18n="dlVisualSub">Page bilkul photo jaisi</em>
+          </span>
+        </a>
+        <a class="dl" id="dlZip" href="#">
+          <span class="dl-ico">▣</span>
+          <span>
+            <strong data-i18n="dlZip">Saari images (ZIP)</strong>
+            <em data-i18n="dlZipSub">Har page PNG mein</em>
+          </span>
+        </a>
+      </div>
+
+      <div class="split">
+        <div class="preview-col">
+          <div class="col-head">
+            <h3 data-i18n="previewTitle">Original pages</h3>
+            <div class="pager">
+              <button type="button" id="prevPage" aria-label="Previous">‹</button>
+              <span id="pageLabel">1 / 1</span>
+              <button type="button" id="nextPage" aria-label="Next">›</button>
+            </div>
+          </div>
+          <figure class="page-frame">
+            <img id="pageImg" alt="Converted page preview" />
+          </figure>
+          <a class="link" id="dlPage" href="#" download data-i18n="dlPage">Is page ko PNG download karo</a>
+        </div>
+        <div class="text-col">
+          <div class="col-head">
+            <h3 data-i18n="textTitle">Nikala hua text</h3>
+            <span class="badge" id="sourceBadge">OCR</span>
+          </div>
+          <pre id="pageText"></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="notes">
+      <article>
+        <h3 data-i18n="n1t">Do Word files kyun?</h3>
+        <p data-i18n="n1p">Editable wali mein text type ki tarah rehta hai — copy, edit, search. Visual wali mein original page ki photo Word ke andar baithti hai, isliye dikhawat same-to-same hoti hai.</p>
+      </article>
+      <article>
+        <h3 data-i18n="n2t">Kab OCR, kab asli text?</h3>
+        <p data-i18n="n2p">Agar PDF mein pehle se text hai to wahi nikalte hain — Hindi headings, tables, numbers sab. Scanned photo ya screenshot ho to OCR se padhte hain.</p>
+      </article>
+      <article>
+        <h3 data-i18n="n3t">Kitna same?</h3>
+        <p data-i18n="n3p">Tables, headings, alignment aur spacing recreate hote hain. Complicated design (watermarks, odd columns) ke liye visual Word + PNG use karo.</p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p>Kagaz Studio · local converter · files aapke session mein rehti hain</p>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
