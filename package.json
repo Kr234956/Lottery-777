@@ -2,6 +2,10 @@
   "name": "lottery-777",
   "private": true,
   "scripts": {
-    "start": "npx --yes serve -s . -l 3000"
+    "start": "vite --host --port 5173",
+    "dev": "vite --host --port 5173"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11"
   }
 }
