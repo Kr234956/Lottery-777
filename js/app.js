@@ -1729,12 +1729,10 @@
     if (state.user && state.page === "landing") state.page = "home";
   }
 
+  if (state.user && (!startHash || startHash === "landing" || startHash === "splash")) {
+    state.page = "home";
+  }
   render();
-  setTimeout(() => {
-    if (state.page === "splash") {
-      go(state.user ? "home" : "landing");
-    }
-  }, 1200);
 
   setInterval(() => {
     state.tick++;
