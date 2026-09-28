@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="SmartDoc Editor — PDF, screenshot aur scanned documents ka text read karke edit karein, erase karein, images add karein aur PDF/PNG/JPG me export karein. 100% browser me process, files private rehti hain.">
+<title>SmartDoc Editor — PDF &amp; Document Text Editor with OCR</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='20' height='20' rx='4' fill='%232563eb'/%3E%3Cpath d='M7 8h10M7 12h10M7 16h6' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<!-- ======================= APP SHELL ======================= -->
+<div id="app" class="app hidden">
+  <header id="topbar">
+    <div class="brand" title="SmartDoc Editor">
+      <svg viewBox="0 0 24 24" class="brand-ico"><rect x="2" y="2" width="20" height="20" rx="4" fill="#2563eb"/><path d="M7 8h10M7 12h10M7 16h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="brand-name">SmartDoc <b>Editor</b></span>
+      <span id="docBadge" class="badge hidden"></span>
+    </div>
+
+    <div id="mainToolbar" class="toolbar"></div>
+
+    <div class="tb-right">
+      <div class="zoom-ctl" title="Zoom">
+        <button class="tbtn" data-act="zoom-out" title="Zoom out (-)"><span class="txt-ico">−</span></button>
+        <span id="zoomPct" class="zoom-pct" title="Zoom level">100%</span>
+        <button class="tbtn" data-act="zoom-in" title="Zoom in (+)"><span class="txt-ico">+</span></button>
+        <button class="tbtn" data-act="fit" title="Fit to screen (F)"><span id="fitIco"></span></button>
+      </div>
+      <button class="tbtn" data-act="preview" id="previewBtn" title="Preview mode — final check"></button>
+      <button class="tbtn primary" data-act="export-open" title="Export / Download (Ctrl+E)"><span id="exportIco"></span><span class="lbl">Export</span></button>
+      <button class="tbtn" data-act="share" title="Share / WhatsApp / Email"></button>
+      <button class="tbtn" data-act="help" title="Help &amp; shortcuts"></button>
+    </div>
+  </header>
+
+  <div id="formatBar" class="formatbar hidden"></div>
+
+  <div id="workspace">
+    <aside id="thumbsPanel" class="panel">
+      <div class="panel-head">
+        <span>Pages</span>
+        <button class="mini" data-act="page-add" title="Add blank page (size choose karein)">+</button>
+      </div>
+      <div id="thumbs" class="thumbs"></div>
+    </aside>
+
+    <main id="canvasArea">
+      <div id="canvasScroll">
+        <div id="pagesArea"></div>
+      </div>
+      <div id="pageIndicator" class="page-indicator hidden"></div>
+      <button id="propsToggle" class="props-toggle" data-act="props-open" title="Properties panel" aria-label="Properties panel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h0a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55h0a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v0a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
+      </button>
+      <div id="previewBanner" class="preview-banner hidden">
+        <b>Preview mode</b> — yahi final document dikhega. <button class="mini" data-act="export-open">Export</button> <button class="mini" data-act="preview">Edit wapas</button>
+      </div>
+    </main>
+
+    <aside id="propsPanel" class="panel">
+      <div id="propsContent"></div>
+    </aside>
+  </div>
+
+  <nav id="mobileToolbar" class="mobile-bar">
+    <button class="mtool" data-act="tool:select" title="Select / Move"><span id="mi-select"></span><i>Select</i></button>
+    <button class="mtool" data-act="tool:text" title="Add Text"><span id="mi-text"></span><i>Text</i></button>
+    <button class="mtool" data-act="menu:erase" title="Erase tools"><span id="mi-eraser"></span><i>Erase</i></button>
+    <button class="mtool" data-act="pickImage" title="Insert Image / Logo"><span id="mi-image"></span><i>Image</i></button>
+    <button class="mtool" data-act="menu:draw" title="Draw &amp; annotate"><span id="mi-pen"></span><i>Draw</i></button>
+    <button class="mtool" data-act="undo" title="Undo (Ctrl+Z)"><span id="mi-undo"></span><i>Undo</i></button>
+    <button class="mtool" data-act="redo" title="Redo (Ctrl+Y)"><span id="mi-redo"></span><i>Redo</i></button>
+    <button class="mtool primary" data-act="export-open" title="Export"><span id="mi-export"></span><i>Export</i></button>
+  </nav>
+</div>
+
+<!-- ======================= LANDING ======================= -->
+<div id="landing" class="landing">
+  <div class="land-inner">
+    <div class="land-brand">
+      <svg viewBox="0 0 24 24" class="land-logo"><rect x="2" y="2" width="20" height="20" rx="4" fill="#2563eb"/><path d="M7 8h10M7 12h10M7 16h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      <div>
+        <h1>SmartDoc <b>Editor</b></h1>
+        <p class="tagline">PDF, screenshot &amp; scanned document ka text — <b>padho, edit karo, erase karo, export karo.</b></p>
+      </div>
+    </div>
+
+    <div id="draftCard" class="draft-card hidden">
+      <div>
+        <b>Unsaved draft mila</b>
+        <span id="draftMeta"></span>
+      </div>
+      <div class="draft-actions">
+        <button class="btn primary" data-act="draft-restore">Restore draft</button>
+        <button class="btn ghost" data-act="draft-discard">Discard</button>
+      </div>
+    </div>
+
+    <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Upload PDF or image">
+      <div class="dz-ico" id="dzIco"></div>
+      <div class="dz-main">
+        <span class="dz-title">Yahan document drop karein</span>
+        <span class="dz-sub">PDF, PNG, JPG, JPEG, WEBP, SVG — multiple files supported</span>
+      </div>
+      <div class="dz-btns">
+        <button class="btn primary" data-act="upload">Upload PDF / Image</button>
+        <button class="btn ghost" data-act="camera">📷 Camera se scan</button>
+      </div>
+      <div class="dz-foot">
+        <span>🔒 100% aapke browser me process hota hai — files kahin upload nahi hote</span>
+        <span class="dz-limits">Max 50MB/file • 30 pages/PDF • OCR: Hindi + English + Hinglish</span>
+      </div>
+    </div>
+
+    <div class="feat-row">
+      <span class="chip">✍️ Editable OCR text</span>
+      <span class="chip">🧽 Smart Eraser</span>
+      <span class="chip">🖼️ Logo &amp; Image insert</span>
+      <span class="chip">🖊️ Draw &amp; Signature</span>
+      <span class="chip">📄 Multi-page PDF</span>
+      <span class="chip">⬇️ PDF / PNG / JPG / ZIP export</span>
+      <span class="chip">💬 WhatsApp share</span>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= OCR OVERLAY ======================= -->
+<div id="ocrOverlay" class="overlay hidden">
+  <div class="ocr-box">
+    <div class="ocr-spin"></div>
+    <h2 id="ocrTitle">Processing…</h2>
+    <div class="ocr-bar"><div id="ocrBarFill" class="ocr-fill"></div></div>
+    <div id="ocrPct" class="ocr-pct">0%</div>
+    <p id="ocrStatus" class="ocr-status">Start ho raha hai…</p>
+    <p class="ocr-note">Pehli baar OCR language data download hota hai (Hindi+English ≈ 20–25 MB). Achhi internet connection rakhein.</p>
+  </div>
+</div>
+
+<!-- ======================= EXPORT MODAL ======================= -->
+<div id="exportModal" class="modal-wrap hidden">
+  <div class="modal">
+    <div class="modal-head"><h3>Export Document</h3><button class="mini" data-close="exportModal">✕</button></div>
+    <div id="exportBody" class="modal-body"></div>
+  </div>
+</div>
+
+<!-- ======================= ADD PAGE MODAL ======================= -->
+<div id="addPageModal" class="modal-wrap hidden">
+  <div class="modal">
+    <div class="modal-head"><h3>Add Blank Page</h3><button class="mini" data-close="addPageModal">✕</button></div>
+    <div class="modal-body">
+      <label class="f-label">Page size</label>
+      <div class="size-grid" id="sizeGrid">
+        <label class="size-card"><input type="radio" name="pagesize" value="a4" checked><span><b>A4</b><small>210 × 297 mm</small></span></label>
+        <label class="size-card"><input type="radio" name="pagesize" value="letter"><span><b>Letter</b><small>216 × 279 mm</small></span></label>
+        <label class="size-card"><input type="radio" name="pagesize" value="legal"><span><b>Legal</b><small>216 × 356 mm</small></span></label>
+        <label class="size-card"><input type="radio" name="pagesize" value="custom"><span><b>Custom</b><small>mm me specify karein</small></span></label>
+      </div>
+      <div id="customSizeRow" class="custom-size hidden">
+        <label>Width (mm) <input type="number" id="customW" value="210" min="50" max="1000"></label>
+        <label>Height (mm) <input type="number" id="customH" value="297" min="50" max="1000"></label>
+      </div>
+      <div class="modal-foot">
+        <button class="btn ghost" data-close="addPageModal">Cancel</button>
+        <button class="btn primary" data-act="page-add-confirm">Add Page</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= CROP MODAL ======================= -->
+<div id="cropModal" class="modal-wrap hidden">
+  <div class="modal modal-wide">
+    <div class="modal-head"><h3>Crop Image</h3><button class="mini" data-close="cropModal">✕</button></div>
+    <div class="modal-body">
+      <div class="crop-presets">
+        <button class="btn sm" data-act="crop-preset" data-val="free">Free</button>
+        <button class="btn sm" data-act="crop-preset" data-val="square">1:1</button>
+        <button class="btn sm" data-act="crop-preset" data-val="16:9">16:9</button>
+        <button class="btn sm" data-act="crop-preset" data-val="4:3">4:3</button>
+        <button class="btn sm" data-act="crop-preset" data-val="circle">● Circle</button>
+      </div>
+      <div id="cropStage" class="crop-stage"></div>
+      <div class="modal-foot">
+        <span class="crop-hint">Box drag karein, handles se resize karein</span>
+        <button class="btn ghost" data-act="crop-reset">Reset</button>
+        <button class="btn primary" data-act="crop-apply">Apply Crop</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= HELP MODAL ======================= -->
+<div id="helpModal" class="modal-wrap hidden">
+  <div class="modal">
+    <div class="modal-head"><h3>Help &amp; Shortcuts</h3><button class="mini" data-close="helpModal">✕</button></div>
+    <div class="modal-body" id="helpBody"></div>
+  </div>
+</div>
+
+<!-- ======================= TOASTS ======================= -->
+<div id="toastBox" class="toast-box" aria-live="polite"></div>
+
+<!-- ======================= MENUS ======================= -->
+<div id="menuLayer" class="menu-layer hidden"></div>
+
+<!-- ======================= HIDDEN INPUTS ======================= -->
+<input type="file" id="fileInput" multiple accept="application/pdf,image/png,image/jpeg,image/jpg,image/webp,image/svg+xml" hidden>
+<input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
+<input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif" hidden>
+<input type="file" id="replaceInput" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+<input type="file" id="projectInput" accept="application/json,.json" hidden>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
